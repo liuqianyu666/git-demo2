@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tjetc.dao.UserMapper">
+    <resultMap id="baseUserMapper" type="user">
+        <id column="user_id" property="id"/>
+        <result column="user_name" property="username"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="email" property="email"/>
+        <result column="phonenumber" property="phone"/>
+        <result column="sex" property="sex"/>
+        <result column="password" property="password"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="status" property="status"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <resultMap id="baseBioMapper" type="bio">
+        <id column="bio_id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="username"/>
+        <result column="phonenumber" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="sex" property="sex"/>
+        <result column="position" property="position"/>
+        <result column="education" property="education"/>
+        <result column="start_day" property="startDay"/>
+        <result column="end_day" property="endDay"/>
+        <result column="introduction" property="introduction"/>
+    </resultMap>
+    <resultMap id="jobCompanyView" type="JobCompanyView">
+        <id column="j_id" property="jobId"/>
+        <result column="j_name" property="jobName"/>
+        <result column="j_saraly_mix" property="jobSalaryMin"/>
+        <result column="j_saraly_max" property="jobSalaryMax"/>
+        <result column="j_educational_require" property="jEducationalRequire"/>
+        <result column="com_id" property="comId"/>
+        <result column="com_name" property="comName"/>
+    </resultMap>
+    <resultMap id="jobDetailsView" type="JobDetailsView">
+        <id column="j_id" property="jobId"/>
+        <result column="j_name" property="jobName"/>
+        <result column="j_describe" property="jobDescribe"/>
+        <result column="j_saraly_mix" property="jobSalaryMin"/>
+        <result column="j_saraly_max" property="jobSalaryMax"/>
+        <result column="j_experience" property="jobExperience"/>
+        <result column="j_educational_require" property="jEducationalRequire"/>
+        <result column="com_id" property="comId"/>
+        <result column="com_name" property="comName"/>
+        <result column="com_type" property="comType"/>
+        <result column="com_financing_state" property="comFinancingState" typeHandler="com.tjetc.handlers.EnumSexTypeHandler"/>
+        <result column="com_scale" property="comScale"/>
+        <result column="com_location" property="comLocation"/>
+        <result column="com_introduce" property="comIntroduce"/>
+        <result column="com_leader_name" property="comLeaderName"/>
+        <result column="com_leader_phone" property="phone"/>
+        <association property="userId" select="selectByNameAndDeptId" column="com_leader_name"/>
+    </resultMap>
+    <select id="selectByNameAndDeptId" resultType="Long">
+        select `user_id` from `sys_user` where `user_name`=#{name} and `dept_id`=102
+    </select>
+    <resultMap id="resumeMapper" type="resume">
+        <id column="id" property="id"/>
+        <result column="bio_id" property="bioId"/>
+        <result column="job_id" property="jobId"/>
+        <result column="state" property="state"/>
+    </resultMap>
+    <resultMap id="resumeJobView" type="ResumeJobView">
+        <id column="id" property="id"/>
+        <result column="bio_id" property="bioId"/>
+        <result column="job_id" property="jobId"/>
+        <result column="j_name" property="jobName"/>
+        <result column="j_saraly_mix" property="jobSalaryMin"/>
+        <result column="j_saraly_max" property="jobSalaryMax"/>
+        <result column="j_experience" property="jobExperience"/>
+        <result column="j_educational_require" property="jEducationalRequire"/>
+        <result column="com_id" property="comId"/>
+        <result column="com_name" property="comName"/>
+        <result column="com_type" property="comType"/>
+        <result column="com_location" property="comLocation"/>
+        <result column="com_leader_name" property="comLeaderName"/>
+        <result column="com_leader_phone" property="phone"/>
+        <result column="state" property="state"/>
+    </resultMap>
+    <select id="selectByUsernameAndIdentity" resultMap="baseUserMapper">
+        select `user_id`,
+               `user_name`,
+               `password`,
+               `dept_id`,
+               `phonenumber`,
+               `status`,
+               `del_flag`,
+               `update_time`,
+               `create_time`
+        from `sys_user`
+        where `user_name` = #{username}
+          and `dept_id` = #{identify}
+    </select>
+    <insert id="registerUser" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+        insert into `sys_user`(`user_name`, `nick_name`, `dept_id`, `email`, `phonenumber`, `sex`, `password`,
+                               `create_by`, `create_time`)
+        values (#{username}, #{nickName}, #{deptId}, #{email}, #{phone}, #{sex}, #{password}, #{createBy},
+                #{createTime})
+    </insert>
+    <select id="selectBioByUserId" resultMap="baseBioMapper">
+        select `bio_id`,
+               `user_id`,
+               `name`,
+               `phonenumber`,
+               `email`,
+               `sex`,
+               `position`,
+               `education`,
+               `start_day`,
+               `end_day`,
+               `introduction`
+        from `sys_user_bio`
+        where user_id = #{userId}
+    </select>
+    <insert id="insertBio" parameterType="bio" useGeneratedKeys="true" keyProperty="id">
+        insert into `sys_user_bio`(`user_id`, `name`, `phonenumber`, `email`, `sex`, `position`, `education`,
+                                   `start_day`, `end_day`, `introduction`)
+        values (#{userId}, #{username}, #{phone}, #{email}, #{sex}, #{position}, #{education}, #{startDay}, #{endDay},
+                #{introduction})
+    </insert>
+    <update id="updateBio" parameterType="bio">
+        update `sys_user_bio`
+        set `user_id`=#{userId},
+            `name`=#{username},
+            `phonenumber`=#{phone},
+            `email`=#{email},
+            `sex`=#{sex},
+            `position`=#{position},
+            `education`=#{education},
+            `start_day`=#{startDay},
+            `end_day`=#{endDay},
+            `introduction`= #{introduction}
+        where user_id = #{userId}
+    </update>
+    <!-- 查询职位推荐 -->
+    <select id="selectListJob" resultMap="jobCompanyView">
+        SELECT j.j_id, j.j_name, j.j_saraly_mix, j.j_saraly_max, j.j_educational_require, c.com_id, c.com_name
+        from t_job j
+        inner join t_company_information c on j.com_id = c.com_id
+    </select>
+
+    <!--    <select id="selectListPosition" resultMap="">-->
+    <!--    </select>-->
+    <!--    &lt;!&ndash; 关键字查询职位 &ndash;&gt;-->
+    <!--    <select id="selectListByKeyword" resultMap="">-->
+    <!--        -->
+    <!--    </select>-->
+    <!-- 查询工作详情包括公司信息 -->
+    <select id="selectJobByJobId" resultMap="jobDetailsView">
+        SELECT j.j_id,
+               j.j_name,
+               j_describe,
+               j.j_saraly_mix,
+               j.j_saraly_max,
+               j_experience,
+               j.j_educational_require,
+               c.com_id,
+               c.com_name,
+               c.com_type,
+               c.com_financing_state,
+               c.com_scale,
+               c.com_location,
+               c.com_introduce,
+               c.com_leader_name
+        FROM t_job j
+        INNER JOIN t_company_information c ON j.com_id = c.com_id
+        WHERE j.j_id = #{jobId}
+    </select>
+    <!-- 查询简历是否投递 -->
+    <select id="selectResume" resultMap="resumeMapper">
+        select `id`,`bio_id`,`job_id`,`state` from sys_user_resume where bio_id=#{bioId} and job_id=#{jobId}
+    </select>
+    <!-- 添加简历投递表 -->
+    <insert id="insertSendBio" parameterType="resume" useGeneratedKeys="true" keyProperty="id">
+        insert into `sys_user_resume`(`bio_id`,`job_id`,`state`) values (#{bioId},#{jobId},#{state})
+    </insert>
+
+    <select id="selectNicknameById" resultType="String">
+        select nick_name from sys_user where user_id = #{id}
+    </select>
+    <!-- 简历查询 -->
+    <select id="selectResumesByBioId" resultMap="resumeJobView">
+        SELECT
+            r.id,
+            r.bio_id,
+            r.job_id,
+            j.j_name,
+            j.j_saraly_mix,
+            j.j_saraly_max,
+            j.j_experience,
+            j.j_educational_require,
+            c.com_id,
+            c.com_name,
+            c.com_type,
+            c.com_location,
+            c.com_leader_name,
+            c.com_leader_phone,
+            r.state
+        FROM
+            sys_user_resume r
+                INNER JOIN t_job j ON r.job_id=j.j_id
+                INNER JOIN t_company_information c ON j.com_id=c.com_id
+        WHERE bio_id=#{bioId}
+    </select>
+    <!-- 取消投递简历 -->
+    <delete id="cancelSend" parameterType="long">
+        delete from `sys_user_resume` where `id`=#{id}
+    </delete>
+</mapper>

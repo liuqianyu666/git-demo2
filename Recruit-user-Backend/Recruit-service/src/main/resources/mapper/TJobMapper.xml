@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tjetc.dao.TJobMapper">
+    
+    <resultMap type="TJob" id="TJobResult">
+        <result property="jId"    column="j_id"    />
+        <result property="comId"    column="com_id"    />
+        <result property="jName"    column="j_name"    />
+        <result property="jDescribe"    column="j_describe"    />
+        <result property="jSaralyMix"    column="j_saraly_mix"    />
+        <result property="jSaralyMax"    column="j_saraly_max"    />
+        <result property="jExperience"    column="j_experience"    />
+        <result property="jEducationalRequire"    column="j_educational_require"    />
+    </resultMap>
+
+    <sql id="selectTJobVo">
+        select j_id, com_id, j_name, j_describe, j_saraly_mix, j_saraly_max, j_experience, j_educational_require from t_job
+    </sql>
+
+    <select id="selectTJobList" parameterType="TJob" resultMap="TJobResult">
+        <include refid="selectTJobVo"/>
+        <where>  
+            <if test="comId != null "> and com_id = #{comId}</if>
+            <if test="jName != null  and jName != ''"> and j_name like concat('%', #{jName}, '%')</if>
+            <if test="jDescribe != null  and jDescribe != ''"> and j_describe = #{jDescribe}</if>
+            <if test="jSaralyMix != null "> and j_saraly_mix = #{jSaralyMix}</if>
+            <if test="jSaralyMax != null "> and j_saraly_max = #{jSaralyMax}</if>
+            <if test="jExperience != null  and jExperience != ''"> and j_experience = #{jExperience}</if>
+            <if test="jEducationalRequire != null  and jEducationalRequire != ''"> and j_educational_require = #{jEducationalRequire}</if>
+        </where>
+    </select>
+    
+    <select id="selectTJobByJId" parameterType="Long" resultMap="TJobResult">
+        <include refid="selectTJobVo"/>
+        where j_id = #{jId}
+    </select>
+        
+    <insert id="insertTJob" parameterType="TJob" useGeneratedKeys="true" keyProperty="jId">
+        insert into t_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comId != null">com_id,</if>
+            <if test="jName != null and jName != ''">j_name,</if>
+            <if test="jDescribe != null and jDescribe != ''">j_describe,</if>
+            <if test="jSaralyMix != null">j_saraly_mix,</if>
+            <if test="jSaralyMax != null">j_saraly_max,</if>
+            <if test="jExperience != null and jExperience != ''">j_experience,</if>
+            <if test="jEducationalRequire != null and jEducationalRequire != ''">j_educational_require,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="comId != null">#{comId},</if>
+            <if test="jName != null and jName != ''">#{jName},</if>
+            <if test="jDescribe != null and jDescribe != ''">#{jDescribe},</if>
+            <if test="jSaralyMix != null">#{jSaralyMix},</if>
+            <if test="jSaralyMax != null">#{jSaralyMax},</if>
+            <if test="jExperience != null and jExperience != ''">#{jExperience},</if>
+            <if test="jEducationalRequire != null and jEducationalRequire != ''">#{jEducationalRequire},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTJob" parameterType="TJob">
+        update t_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="comId != null">com_id = #{comId},</if>
+            <if test="jName != null and jName != ''">j_name = #{jName},</if>
+            <if test="jDescribe != null and jDescribe != ''">j_describe = #{jDescribe},</if>
+            <if test="jSaralyMix != null">j_saraly_mix = #{jSaralyMix},</if>
+            <if test="jSaralyMax != null">j_saraly_max = #{jSaralyMax},</if>
+            <if test="jExperience != null and jExperience != ''">j_experience = #{jExperience},</if>
+            <if test="jEducationalRequire != null and jEducationalRequire != ''">j_educational_require = #{jEducationalRequire},</if>
+        </trim>
+        where j_id = #{jId}
+    </update>
+
+    <delete id="deleteTJobByJId" parameterType="Long">
+        delete from t_job where j_id = #{jId}
+    </delete>
+
+    <delete id="deleteTJobByJIds" parameterType="String">
+        delete from t_job where j_id in 
+        <foreach item="jId" collection="array" open="(" separator="," close=")">
+            #{jId}
+        </foreach>
+    </delete>
+</mapper>

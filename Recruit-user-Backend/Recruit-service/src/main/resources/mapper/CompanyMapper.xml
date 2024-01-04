@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tjetc.dao.CompanyMapper">
+    <select id="selectByUsername" resultMap="companyMap">
+        select com_id,
+               com_name,
+               com_type,
+               com_financing_state,
+               com_scale,
+               com_location,
+               com_introduce,
+               com_business_licence_url,
+               com_leader_name,
+               com_leader_phone
+        from t_company_information
+        where com_leader_phone = #{phoneNum}
+    </select>
+    <resultMap id="companyMap" type="companyinformation">
+        <id property="comId" column="com_id"></id>
+        <result property="comName" column="com_name"></result>
+        <result property="comType" column="com_type"></result>
+        <result property="comState" column="com_financing_state"
+                typeHandler="com.tjetc.handlers.EnumSexTypeHandler"></result>
+        <result property="comScale" column="com_scale"></result>
+        <result property="comLocation" column="com_location"></result>
+        <result property="comIntroduce" column="com_introduce"></result>
+        <result property="comBusinessLicence" column="com_business_licence_url"></result>
+        <result property="comLeaderName" column="com_leader_name"></result>
+        <result property="comLeaderPhone" column="com_leader_phone"></result>
+    </resultMap>
+    <update id="updateComInfo">
+        update `t_company_information`
+        set com_name=#{comName},
+            com_type=#{comType},
+            com_financing_state=#{comState,typeHandler=com.tjetc.handlers.EnumSexTypeHandler},
+            com_scale=#{comScale},
+            com_location=#{comLocation},
+            com_introduce=#{comIntroduce},
+            com_leader_name=#{comLeaderName},
+            com_leader_phone=#{comLeaderPhone}
+        where com_id = #{comId}
+    </update>
+    <insert id="insertBaseInformation" parameterType="CompanyInformation">
+        insert into t_company_information
+            (com_name, com_type,com_financing_state, com_scale, com_location, com_introduce, com_business_licence_url, com_leader_name, com_leader_phone)
+        VALUES (#{comName},#{comType},#{comState,typeHandler=com.tjetc.handlers.EnumSexTypeHandler},#{comScale},#{comLocation},#{comIntroduce},#{comBusinessLicence},#{comLeaderName},#{comLeaderPhone})
+    </insert>
+    <!-- 默认查询所有投递人员  -->
+    <select id="selectBioByComId" resultMap="bioMap">
+        select j_id,com_id,j_name,id,bio_id,job_id,`state`,b_id,user_id,`name`,phonenumber,email,sex,`position`,education,start_day,end_day,introduction
+        from job_bio_resume
+        WHERE com_id = #{comId}
+    </select>
+    <resultMap id="bioMap" type="jobbioresumeview">
+        <result property="jId" column="j_id"></result>
+        <result property="comId" column="com_id"></result>
+        <result property="jName" column="j_name"></result>
+
+        <result property="rId" column="id"></result>
+        <result property="bioId" column="bio_id"></result>
+        <result property="jobId" column="job_id"></result>
+        <result property="state" column="state"></result>
+
+        <result property="bId" column="b_id"></result>
+        <result property="userId" column="user_id"></result>
+        <result property="username" column="name"></result>
+        <result property="phone" column="phonenumber"></result>
+        <result property="email" column="email"></result>
+        <result property="sex" column="sex"></result>
+        <result property="position" column="position"></result>
+        <result property="education" column="education"></result>
+        <result property="startDay" column="start_day"></result>
+        <result property="endDay" column="end_day"></result>
+        <result property="introduction" column="introduction"></result>
+    </resultMap>
+    <!-- 通过简历ID,修改投递状态-->
+    <update id="updateStateByBioId" >
+        update `sys_user_resume` set `state`=#{state} where id=#{rId}
+    </update>
+    <select id="selectBio" resultMap="biosMap">
+        select `bio_id`,user_id,`name`,phonenumber,`email`,`sex`,`position`,education,start_day,end_day,introduction from sys_user_bio
+    </select>
+    <resultMap id="biosMap" type="bio">
+        <id column="bio_id" property="id"></id>
+        <result column="user_id" property="userId"></result>
+        <result column="name" property="username"></result>
+        <result column="phonenumber" property="phone"></result>
+        <result column="email" property="email"></result>
+        <result column="sex" property="sex"></result>
+        <result column="position" property="position"></result>
+        <result column="education" property="education"></result>
+        <result column="start_day" property="startDay"></result>
+        <result column="end_day" property="endDay"></result>
+        <result column="introduction" property="introduction"></result>
+    </resultMap>
+</mapper>
